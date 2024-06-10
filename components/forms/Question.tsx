@@ -46,27 +46,25 @@ const Question = ({ mongoUserId }: Props) => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof QuestionsSchema>) {
     setIsSubmitting(true);
+
     try {
-      await createQuestion({});
-    } catch (error) {}
-    // try {
-    //   // make an async call to your API -> create a question
-    //   // contain all form data
+      // make an async call to your API -> create a question
+      // contain all form data
 
-    //   await createQuestion({
-    //     title: values.title,
-    //     content: values.explanation,
-    //     tags: values.tags,
-    //     author: JSON.parse(mongoUserId),
-    //     path: pathname,
-    //   });
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
 
-    //   // navigate to home page
-    //   router.push("/");
-    // } catch (error) {
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
+      // navigate to home page
+      router.push("/");
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleInputKeyDown = (
