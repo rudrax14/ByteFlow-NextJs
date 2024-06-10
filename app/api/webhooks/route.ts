@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     // const { id } = evt.data;
     const eventType = evt.type;
     console.log(`Received webhook of type ${eventType}`);
-    if (eventType === 'user.created') {
+    if (evt.type === 'user.created') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
 
         // Create a new user in your database
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'OK', user: mongoUser })
     }
 
-    if (eventType === 'user.updated') {
+    if (evt.type === 'user.updated') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
 
         // Update a user in your database
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'OK', user: mongoUser })
     }
     // Delete a user in your database
-    if (eventType === 'user.deleted') {
+    if (evt.type === 'user.deleted') {
         const { id } = evt.data;
 
         const deletedUser = await deleteUser({
