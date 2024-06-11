@@ -48,58 +48,53 @@ export async function POST(req: Request) {
     console.log(`Received webhook of type ${eventType}`);
     console.log(`Event data: ${JSON.stringify(evt.data)}`);
 
-    try {
-        if (evt.type === 'user.created') {
-            const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
 
-            const mongoUser = await createUser({
-                clerkId: id,
+    if (evt.type === 'user.created') {
+        const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
+
+        const mongoUser = await createUser({
+            clerkId: id,
+            name: `${first_name}${last_name ? ` ${last_name}` : ''}`,
+            username: username!,
+            email: email_addresses[0].email_address,
+            picture: image_url,
+        })
+
+        console.log(`User created: ${JSON.stringify(mongoUser)}`);
+        return NextResponse.json({ message: 'OK', user: mongoUser })
+    }
+
+    if (evt.type === 'user.updated') {
+        const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
+
+        const mongoUser = await updateUser({
+            clerkId: id,
+            updateData: {
                 name: `${first_name}${last_name ? ` ${last_name}` : ''}`,
                 username: username!,
                 email: email_addresses[0].email_address,
                 picture: image_url,
-            })
-
-            console.log(`User created: ${JSON.stringify(mongoUser)}`);
-            return NextResponse.json({ message: 'OK', user: mongoUser })
-        }
-
-        if (evt.type === 'user.updated') {
-            const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
-
-            const mongoUser = await updateUser({
-                clerkId: id,
-                updateData: {
-                    name: `${first_name}${last_name ? ` ${last_name}` : ''}`,
-                    username: username!,
-                    email: email_addresses[0].email_address,
-                    picture: image_url,
-                },
-                path: `/profile/${id}`
-            })
-
-            console.log(`User updated: ${JSON.stringify(mongoUser)}`);
-            return NextResponse.json({ message: 'OK', user: mongoUser })
-        }
-
-        if (evt.type === 'user.deleted') {
-            const { id } = evt.data;
-
-            const deletedUser = await deleteUser({
-                clerkId: id!,
-            })
-
-            console.log(`User deleted: ${JSON.stringify(deletedUser)}`);
-            return NextResponse.json({ message: 'OK', user: deletedUser })
-        }
-
-        console.warn(`Unhandled event type: ${eventType}`);
-        return new Response('', { status: 201 })
-
-    } catch (error) {
-        console.error('Error processing webhook event:', error);
-        return new Response('Error processing event', {
-            status: 500
+            },
+            path: `/profile/${id}`
         })
+
+        console.log(`User updated: ${JSON.stringify(mongoUser)}`);
+        return NextResponse.json({ message: 'OK', user: mongoUser })
     }
+
+    if (evt.type === 'user.deleted') {
+        const { id } = evt.data;
+
+        const deletedUser = await deleteUser({
+            clerkId: id!,
+        })
+
+        console.log(`User deleted: ${JSON.stringify(deletedUser)}`);
+        return NextResponse.json({ message: 'OK', user: deletedUser })
+    }
+
+    console.warn(`Unhandled event type: ${eventType}`);
+    return new Response('', { status: 201 })
+
+
 }
