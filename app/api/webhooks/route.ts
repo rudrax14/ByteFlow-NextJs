@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createUser, deleteUser, updateUser } from '@/lib/actions/user.action'
+import { connectToDatabase } from '@/lib/mongoose'
 
 export async function POST(req: Request) {
 
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
     console.log(`Received webhook of type ${eventType}`);
     console.log(`Event data: ${JSON.stringify(evt.data)}`);
 
-
+    await connectToDatabase()
 
     if (evt.type === 'user.created') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
