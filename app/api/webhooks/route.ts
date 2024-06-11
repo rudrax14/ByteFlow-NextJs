@@ -4,7 +4,6 @@ import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { createUser, deleteUser, updateUser } from '@/lib/actions/user.action'
-import { connectToDatabase } from '@/lib/mongoose'
 
 export async function POST(req: Request) {
 
@@ -48,8 +47,6 @@ export async function POST(req: Request) {
     const eventType = evt.type;
     console.log(`Received webhook of type ${eventType}`);
     console.log(`Event data: ${JSON.stringify(evt.data)}`);
-
-    await connectToDatabase()
 
     if (evt.type === 'user.created') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
@@ -96,8 +93,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'OK', user: deletedUser })
     }
 
-    console.warn(`Unhandled event type: ${eventType}`);
-    return new Response('', { status: 201 })
-
+    // console.warn(`Unhandled event type: ${eventType}`);
+    // return new Response('', { status: 201 })
 
 }
