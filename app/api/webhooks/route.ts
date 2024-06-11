@@ -49,9 +49,10 @@ export async function POST(req: Request) {
     console.log(`Event data: ${JSON.stringify(evt.data)}`);
 
 
+
     if (evt.type === 'user.created') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
-
+        console.log('userCreated', evt.data)
         const mongoUser = await createUser({
             clerkId: id,
             name: `${first_name}${last_name ? ` ${last_name}` : ''}`,
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
 
     if (evt.type === 'user.updated') {
         const { id, email_addresses, image_url, username, first_name, last_name } = evt.data;
-
+        console.log('userUpdated', evt.data)
         const mongoUser = await updateUser({
             clerkId: id,
             updateData: {
@@ -84,7 +85,7 @@ export async function POST(req: Request) {
 
     if (evt.type === 'user.deleted') {
         const { id } = evt.data;
-
+        console.log('userDeleted', evt.data)
         const deletedUser = await deleteUser({
             clerkId: id!,
         })
