@@ -61,7 +61,7 @@ export async function deleteUser(params: DeleteUserParams) {
 
     const user = await User.findOneAndDelete({ clerkId });
 
-    if(!user) {
+    if (!user) {
       throw new Error('User not found');
     }
 
@@ -109,22 +109,22 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
 
     const user = await User.findById(userId);
 
-    if(!user) {
+    if (!user) {
       throw new Error('User not found');
     }
 
     const isQuestionSaved = user.saved.includes(questionId);
 
-    if(isQuestionSaved) {
+    if (isQuestionSaved) {
       // remove question from saved
-      await User.findByIdAndUpdate(userId, 
-        { $pull: { saved: questionId }},
+      await User.findByIdAndUpdate(userId,
+        { $pull: { saved: questionId } },
         { new: true }
       )
     } else {
       // add question to saved
-      await User.findByIdAndUpdate(userId, 
-        { $addToSet: { saved: questionId }},
+      await User.findByIdAndUpdate(userId,
+        { $addToSet: { saved: questionId } },
         { new: true }
       )
     }
@@ -141,10 +141,10 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     connectToDatabase();
 
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
-    
+
     const query: FilterQuery<typeof Question> = searchQuery
       ? { title: { $regex: new RegExp(searchQuery, 'i') } }
-      : { };
+      : {};
 
     const user = await User.findOne({ clerkId }).populate({
       path: 'saved',
@@ -154,11 +154,11 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       },
       populate: [
         { path: 'tags', model: Tag, select: "_id name" },
-        { path: 'author', model: User, select: '_id clerkId name picture'}
+        { path: 'author', model: User, select: '_id clerkId name picture' }
       ]
     })
 
-    if(!user) {
+    if (!user) {
       throw new Error('User not found');
     }
 
