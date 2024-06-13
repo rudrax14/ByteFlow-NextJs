@@ -11,8 +11,9 @@ import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { URLProps } from "@/types";
 
-const Page = async ({ params }: any) => {
+const Page = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
 
   let mongoUser;
