@@ -20,6 +20,7 @@ interface QuestionProps {
   views: number;
   answers: Array<object>;
   createdAt: Date;
+  clerkId?: string | null | undefined;
 }
 
 const QuestionCard = ({
