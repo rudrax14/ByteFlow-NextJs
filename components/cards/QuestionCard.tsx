@@ -14,7 +14,7 @@ interface QuestionProps {
     name: string;
   }[];
   author: {
-    clerkId: string;
+    clerkId?: string;
     _id: string;
     name: string;
     picture: string;
@@ -23,7 +23,7 @@ interface QuestionProps {
   views: number;
   answers: Array<object>;
   createdAt: Date;
-  clerkId?: string;
+  clerkId?: string | null;
 }
 
 const QuestionCard = ({

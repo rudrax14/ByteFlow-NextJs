@@ -5,7 +5,7 @@ import QuestionCard from "../cards/QuestionCard";
 
 interface Props extends SearchParamsProps {
   userId: string;
-  clerkId?: string | null | undefined;
+  clerkId?: string;
 }
 
 const QuestionTab = async ({ userId, clerkId }: Props) => {
