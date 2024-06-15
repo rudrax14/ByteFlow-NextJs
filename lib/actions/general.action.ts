@@ -6,7 +6,6 @@ import { SearchParams } from "./shared.types";
 import User from "@/database/user.model";
 import Answer from "@/database/answer.model";
 import Tag from "@/database/tag.model";
-import { model } from "mongoose";
 
 const SearchableTypes = ["question", "answer", "user", "tag"];
 
@@ -20,15 +19,15 @@ export async function globalSearch(params: SearchParams) {
     let results = [];
 
     const modelsAndTypes = [
-      { model: Question, searchField: 'title', type: 'question'},
-      { model: User, searchField: 'name', type: 'user'},
-      { model: Answer, searchField: 'content', type: 'answer'},
-      { model: Tag, searchField: 'name', type: 'tag'},
+      { model: Question, searchField: 'title', type: 'question' },
+      { model: User, searchField: 'name', type: 'user' },
+      { model: Answer, searchField: 'content', type: 'answer' },
+      { model: Tag, searchField: 'name', type: 'tag' },
     ]
 
     const typeLower = type?.toLowerCase();
 
-    if(!typeLower || !SearchableTypes.includes(typeLower)) {
+    if (!typeLower || !SearchableTypes.includes(typeLower)) {
       // SEARCH ACROSS EVERYTHING
 
       for (const { model, searchField, type } of modelsAndTypes) {
@@ -36,25 +35,25 @@ export async function globalSearch(params: SearchParams) {
           .find({ [searchField]: regexQuery })
           .limit(2);
 
-          results.push(
-            ...queryResults.map((item) => ({
-              title: type === 'answer' 
-              ? `Answers containing ${query}` 
+        results.push(
+          ...queryResults.map((item) => ({
+            title: type === 'answer'
+              ? `Answers containing ${query}`
               : item[searchField],
-              type,
-              id: type === 'user'
-                ? item.clerkid
-                : type==='answer'
-                  ? item.question 
-                  : item._id
-              }))
-          )
+            type,
+            id: type === 'user'
+              ? item.clerkid
+              : type === 'answer'
+                ? item.question
+                : item._id
+          }))
+        )
       }
     } else {
       // SEARCH IN THE SPECIFIED MODEL TYPE
       const modelInfo = modelsAndTypes.find((item) => item.type === type);
 
-      console.log({modelInfo, type});
+      console.log({ modelInfo, type });
       if (!modelInfo) {
         throw new Error("Invalid search type");
       }
@@ -73,8 +72,8 @@ export async function globalSearch(params: SearchParams) {
           type === "user"
             ? item.clerkId
             : type === "answer"
-            ? item.question
-            : item._id,
+              ? item.question
+              : item._id,
       }));
     }
 

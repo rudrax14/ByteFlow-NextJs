@@ -15,10 +15,10 @@ export async function createAnswer(params: CreateAnswerParams) {
     const { content, author, question, path } = params;
 
     const newAnswer = await Answer.create({ content, author, question });
-    
+
     // Add the answer to the question's answers array
     const questionObject = await Question.findByIdAndUpdate(question, {
-      $push: { answers: newAnswer._id}
+      $push: { answers: newAnswer._id }
     })
 
     await Interaction.create({
@@ -29,7 +29,7 @@ export async function createAnswer(params: CreateAnswerParams) {
       tags: questionObject.tags
     })
 
-    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 }})
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 } })
 
     revalidatePath(path)
   } catch (error) {
@@ -61,7 +61,7 @@ export async function getAnswers(params: GetAnswersParams) {
       case "old":
         sortOptions = { createdAt: 1 }
         break;
-    
+
       default:
         break;
     }
@@ -72,7 +72,7 @@ export async function getAnswers(params: GetAnswersParams) {
       .skip(skipAmount)
       .limit(pageSize);
 
-    const totalAnswer = await Answer.countDocuments({ 
+    const totalAnswer = await Answer.countDocuments({
       question: questionId
     })
 
@@ -93,29 +93,29 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
 
     let updateQuery = {};
 
-    if(hasupVoted) {
-      updateQuery = { $pull: { upvotes: userId }}
+    if (hasupVoted) {
+      updateQuery = { $pull: { upvotes: userId } }
     } else if (hasdownVoted) {
-      updateQuery = { 
+      updateQuery = {
         $pull: { downvotes: userId },
         $push: { upvotes: userId }
       }
     } else {
-      updateQuery = { $addToSet: { upvotes: userId }}
+      updateQuery = { $addToSet: { upvotes: userId } }
     }
 
     const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
 
-    if(!answer) {
+    if (!answer) {
       throw new Error("Answer not found");
     }
 
     // Increment author's reputation
-    await User.findByIdAndUpdate(userId, { 
+    await User.findByIdAndUpdate(userId, {
       $inc: { reputation: hasupVoted ? -2 : 2 }
     })
 
-    await User.findByIdAndUpdate(answer.author, { 
+    await User.findByIdAndUpdate(answer.author, {
       $inc: { reputation: hasupVoted ? -10 : 10 }
     })
 
@@ -135,29 +135,29 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 
     let updateQuery = {};
 
-    if(hasdownVoted) {
-      updateQuery = { $pull: { downvote: userId }}
+    if (hasdownVoted) {
+      updateQuery = { $pull: { downvote: userId } }
     } else if (hasupVoted) {
-      updateQuery = { 
+      updateQuery = {
         $pull: { upvotes: userId },
         $push: { downvotes: userId }
       }
     } else {
-      updateQuery = { $addToSet: { downvotes: userId }}
+      updateQuery = { $addToSet: { downvotes: userId } }
     }
 
     const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
 
-    if(!answer) {
+    if (!answer) {
       throw new Error("Answer not found");
     }
 
     // Increment author's reputation
-    await User.findByIdAndUpdate(userId, { 
+    await User.findByIdAndUpdate(userId, {
       $inc: { reputation: hasdownVoted ? -2 : 2 }
     })
 
-    await User.findByIdAndUpdate(answer.author, { 
+    await User.findByIdAndUpdate(answer.author, {
       $inc: { reputation: hasdownVoted ? -10 : 10 }
     })
 
@@ -176,12 +176,12 @@ export async function deleteAnswer(params: DeleteAnswerParams) {
 
     const answer = await Answer.findById(answerId);
 
-    if(!answer) {
+    if (!answer) {
       throw new Error("Answer not found");
     }
 
     await answer.deleteOne({ _id: answerId });
-    await Question.updateMany({ _id: answer.question }, { $pull: { answers: answerId }});
+    await Question.updateMany({ _id: answer.question }, { $pull: { answers: answerId } });
     await Interaction.deleteMany({ answer: answerId });
 
     revalidatePath(path);
