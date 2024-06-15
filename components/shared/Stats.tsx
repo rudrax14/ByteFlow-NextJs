@@ -5,6 +5,7 @@ interface StatsCardProps {
   imgUrl: string;
   value: number;
   title: string;
+
 }
 
 const StatsCard = ({ imgUrl, value, title }: StatsCardProps) => {
@@ -22,6 +23,7 @@ const StatsCard = ({ imgUrl, value, title }: StatsCardProps) => {
 interface Props {
   totalQuestions: number;
   totalAnswers: number;
+  
 }
 
 const Stats = ({ totalQuestions, totalAnswers }: Props) => {
