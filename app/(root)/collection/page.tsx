@@ -8,6 +8,7 @@ import { getSavedQuestions } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Loading from "./loading";
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
@@ -21,6 +22,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
     page: searchParams.page ? +searchParams.page : 1,
   });
 
+  
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">Saved Questions</h1>
